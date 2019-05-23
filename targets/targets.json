@@ -8742,7 +8742,7 @@
             "LPTICKER_DELAY_TICKS=4"
         ],
         "is_disk_virtual": true,
-        "supported_toolchains": ["ARMC6"],
+        "supported_toolchains": ["ARMC6", "GCC_ARM"],
         "config": {
             "gpio-irq-debounce-enable": {
                 "help": "Enable GPIO IRQ debounce",
