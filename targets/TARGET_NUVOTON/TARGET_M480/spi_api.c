@@ -24,6 +24,7 @@
 #include "nu_modutil.h"
 #include "nu_miscutil.h"
 #include "nu_bitutil.h"
+#include "nu_pinmap.h"
 
 #if DEVICE_SPI_ASYNCH
 #include "dma_api.h"
@@ -32,6 +33,8 @@
 
 #define NU_SPI_FRAME_MIN    8
 #define NU_SPI_FRAME_MAX    32
+#define NU_PIN_PER_MAX      2   // Check PeripheralPins.c for maximum mappings
+                                // of pin-perif for one pin in the same pinmap
 
 struct nu_spi_var {
 #if DEVICE_SPI_ASYNCH
@@ -133,6 +136,32 @@ static const struct nu_modinit_s spi_modinit_tab[] = {
 void spi_init(spi_t *obj, PinName mosi, PinName miso, PinName sclk, PinName ssel)
 {
     // Determine which SPI_x the pins are used for
+#if defined(NU_PIN_PER_MAX) && (NU_PIN_PER_MAX > 1)
+    int spi_mosi_pers[NU_PIN_PER_MAX] = {NC};
+    int spi_miso_pers[NU_PIN_PER_MAX] = {NC};
+    int spi_sclk_pers[NU_PIN_PER_MAX] = {NC};
+    int spi_ssel_pers[NU_PIN_PER_MAX] = {NC};
+    PeripheralList spi_mosi_perlist = {NU_PIN_PER_MAX, (const int *) &spi_mosi_pers};
+    PeripheralList spi_miso_perlist = {NU_PIN_PER_MAX, (const int *) &spi_miso_pers};
+    PeripheralList spi_sclk_perlist = {NU_PIN_PER_MAX, (const int *) &spi_sclk_pers};
+    PeripheralList spi_ssel_perlist = {NU_PIN_PER_MAX, (const int *) &spi_ssel_pers};
+    nu_pinmap_peripheral_mx(mosi, PinMap_SPI_MOSI, &spi_mosi_perlist);
+    nu_pinmap_peripheral_mx(miso, PinMap_SPI_MISO, &spi_miso_perlist);
+    nu_pinmap_peripheral_mx(sclk, PinMap_SPI_SCLK, &spi_sclk_perlist);
+    nu_pinmap_peripheral_mx(ssel, PinMap_SPI_SSEL, &spi_ssel_perlist);
+
+    int spi_data_pers[NU_PIN_PER_MAX] = {NC};
+    int spi_cntl_pers[NU_PIN_PER_MAX] = {NC};
+    PeripheralList spi_data_perlist = {NU_PIN_PER_MAX, (const int *) &spi_data_pers};
+    PeripheralList spi_cntl_perlist = {NU_PIN_PER_MAX, (const int *) &spi_cntl_pers};
+    nu_pinmap_merge_mx(&spi_mosi_perlist, &spi_miso_perlist, &spi_data_perlist);
+    nu_pinmap_merge_mx(&spi_sclk_perlist, &spi_ssel_perlist, &spi_cntl_perlist);
+
+    int spi_pers[NU_PIN_PER_MAX] = {NC};
+    PeripheralList spi_perlist = {NU_PIN_PER_MAX, (const int *) &spi_pers};
+    nu_pinmap_merge_mx(&spi_data_perlist, &spi_cntl_perlist, &spi_perlist);
+    obj->spi.spi = (SPIName) spi_pers[0];
+#else
     uint32_t spi_mosi = pinmap_peripheral(mosi, PinMap_SPI_MOSI);
     uint32_t spi_miso = pinmap_peripheral(miso, PinMap_SPI_MISO);
     uint32_t spi_sclk = pinmap_peripheral(sclk, PinMap_SPI_SCLK);
@@ -140,6 +169,7 @@ void spi_init(spi_t *obj, PinName mosi, PinName miso, PinName sclk, PinName ssel
     uint32_t spi_data = pinmap_merge(spi_mosi, spi_miso);
     uint32_t spi_cntl = pinmap_merge(spi_sclk, spi_ssel);
     obj->spi.spi = (SPIName) pinmap_merge(spi_data, spi_cntl);
+#endif
     MBED_ASSERT((int)obj->spi.spi != NC);
 
     const struct nu_modinit_s *modinit = get_modinit(obj->spi.spi, spi_modinit_tab);
@@ -151,10 +181,17 @@ void spi_init(spi_t *obj, PinName mosi, PinName miso, PinName sclk, PinName ssel
     obj->spi.pin_sclk = sclk;
     obj->spi.pin_ssel = ssel;
 
+#if defined(NU_PIN_PER_MAX) && (NU_PIN_PER_MAX > 1)
+    nu_pinmap_pinout_mx(mosi, PinMap_SPI_MOSI, spi_pers[0]);
+    nu_pinmap_pinout_mx(miso, PinMap_SPI_MISO, spi_pers[0]);
+    nu_pinmap_pinout_mx(sclk, PinMap_SPI_SCLK, spi_pers[0]);
+    nu_pinmap_pinout_mx(ssel, PinMap_SPI_SSEL, spi_pers[0]);
+#else
     pinmap_pinout(mosi, PinMap_SPI_MOSI);
     pinmap_pinout(miso, PinMap_SPI_MISO);
     pinmap_pinout(sclk, PinMap_SPI_SCLK);
     pinmap_pinout(ssel, PinMap_SPI_SSEL);
+#endif
 
     // Select IP clock source
     CLK_SetModuleClock(modinit->clkidx, modinit->clksrc, modinit->clkdiv);
