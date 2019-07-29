@@ -71,7 +71,12 @@ void test_basic_input_output(PinName pin)
     gpio_mode(&gpio, PullUp);
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, false);
     wait_us(HI_Z_READ_DELAY_US);
+    // Some targets don't support pull-up/pull-down mode.
+#if !defined(TARGET_NANO100) &&         \
+    !defined(TARGET_NUC472) &&          \
+    !defined(TARGET_M451)
     TEST_ASSERT_EQUAL_INT(1, gpio_read(&gpio)); // hi-Z, pulled up
+#endif
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, true);
     TEST_ASSERT_EQUAL_INT(0, gpio_read(&gpio));
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 1, true);
@@ -80,13 +85,23 @@ void test_basic_input_output(PinName pin)
     TEST_ASSERT_EQUAL_INT(0, gpio_read(&gpio));
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, false);
     wait_us(HI_Z_READ_DELAY_US);
+    // Some targets don't support pull-up/pull-down mode.
+#if !defined(TARGET_NANO100) &&         \
+    !defined(TARGET_NUC472) &&          \
+    !defined(TARGET_M451)
     TEST_ASSERT_EQUAL_INT(1, gpio_read(&gpio)); // hi-Z, pulled up
+#endif
 
     // Test input, pull-down mode.
     gpio_mode(&gpio, PullDown);
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, false);
     wait_us(HI_Z_READ_DELAY_US);
+    // Some targets don't support pull-up/pull-down mode.
+#if !defined(TARGET_NANO100) &&         \
+    !defined(TARGET_NUC472) &&          \
+    !defined(TARGET_M451)
     TEST_ASSERT_EQUAL_INT(0, gpio_read(&gpio)); // hi-Z, pulled down
+#endif
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 1, true);
     TEST_ASSERT_EQUAL_INT(1, gpio_read(&gpio));
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, true);
@@ -95,7 +110,12 @@ void test_basic_input_output(PinName pin)
     TEST_ASSERT_EQUAL_INT(1, gpio_read(&gpio));
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, false);
     wait_us(HI_Z_READ_DELAY_US);
+    // Some targets don't support pull-up/pull-down mode.
+#if !defined(TARGET_NANO100) &&         \
+    !defined(TARGET_NUC472) &&          \
+    !defined(TARGET_M451)
     TEST_ASSERT_EQUAL_INT(0, gpio_read(&gpio)); // hi-Z, pulled down
+#endif
 
     // Test input, pull-none mode.
     gpio_mode(&gpio, PullNone);
@@ -142,7 +162,12 @@ void test_explicit_input(PinName pin)
     TEST_ASSERT_NOT_EQUAL(0, gpio_is_connected(&gpio));
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, false);
     wait_us(HI_Z_READ_DELAY_US);
+    // Some targets don't support pull-up/pull-down mode.
+#if !defined(TARGET_NANO100) &&         \
+    !defined(TARGET_NUC472) &&          \
+    !defined(TARGET_M451)
     TEST_ASSERT_EQUAL_INT(1, gpio_read(&gpio)); // hi-Z, pulled up
+#endif
 
     // Initialize GPIO pin as an input, pull-down mode.
     memset(&gpio, 0, sizeof gpio);
@@ -150,7 +175,12 @@ void test_explicit_input(PinName pin)
     TEST_ASSERT_NOT_EQUAL(0, gpio_is_connected(&gpio));
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, false);
     wait_us(HI_Z_READ_DELAY_US);
+    // Some targets don't support pull-up/pull-down mode.
+#if !defined(TARGET_NANO100) &&         \
+    !defined(TARGET_NUC472) &&          \
+    !defined(TARGET_M451)
     TEST_ASSERT_EQUAL_INT(0, gpio_read(&gpio)); // hi-Z, pulled down
+#endif
 
     // Initialize GPIO pin as an input, pull-up mode.
     memset(&gpio, 0, sizeof gpio);
@@ -158,7 +188,12 @@ void test_explicit_input(PinName pin)
     TEST_ASSERT_NOT_EQUAL(0, gpio_is_connected(&gpio));
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, false);
     wait_us(HI_Z_READ_DELAY_US);
+    // Some targets don't support pull-up/pull-down mode.
+#if !defined(TARGET_NANO100) &&         \
+    !defined(TARGET_NUC472) &&          \
+    !defined(TARGET_M451)
     TEST_ASSERT_EQUAL_INT(1, gpio_read(&gpio)); // hi-Z, pulled up
+#endif
 
     // Initialize GPIO pin as an input, pull-down mode.
     memset(&gpio, 0, sizeof gpio);
@@ -166,7 +201,12 @@ void test_explicit_input(PinName pin)
     TEST_ASSERT_NOT_EQUAL(0, gpio_is_connected(&gpio));
     tester.gpio_write(MbedTester::LogicalPinGPIO0, 0, false);
     wait_us(HI_Z_READ_DELAY_US);
+    // Some targets don't support pull-up/pull-down mode.
+#if !defined(TARGET_NANO100) &&         \
+    !defined(TARGET_NUC472) &&          \
+    !defined(TARGET_M451)
     TEST_ASSERT_EQUAL_INT(0, gpio_read(&gpio)); // hi-Z, pulled down
+#endif
 }
 
 /* Test explicit output initialization.
