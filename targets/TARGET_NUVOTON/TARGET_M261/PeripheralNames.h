@@ -88,7 +88,8 @@ typedef enum {
     SPI_0 = (int) NU_MODNAME(SPI0_BASE, 0, 0),
     SPI_1 = (int) NU_MODNAME(SPI1_BASE, 1, 0),
     SPI_2 = (int) NU_MODNAME(SPI2_BASE, 2, 0),
-    SPI_3 = (int) NU_MODNAME(SPI3_BASE, 3, 0)
+    SPI_3 = (int) NU_MODNAME(SPI3_BASE, 3, 0),
+    SPI_4 = (int) NU_MODNAME(QSPI0_BASE, 4, 0)
 
 } SPIName;
 
